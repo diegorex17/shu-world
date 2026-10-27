@@ -15,5 +15,6 @@ Si no puedes leer un link, di qué datos faltan; no los inventes. Los links con 
 ## Reglas
 - Cambia solo lo necesario y explica por qué. Antes de borrar o renombrar archivos, muestra qué cambia y espera OK.
 - Mantén el diseño: tarjetas `<details>`, buscador, "Colapsar/Expandir todo", tokens de color claro/oscuro,
-  Bricolage Grotesque + Figtree, bien en celular.
+  bien en celular. Estética de Shu (logo en `assets/shu-logo.png`): azul cielo, amarillo crema, rosa,
+  contornos café tipo sticker; fuentes Baloo 2 (títulos) + Nunito (texto).
 - `gh` está en `C:\Program Files\GitHub CLI\gh.exe` (cuenta diegorex17).

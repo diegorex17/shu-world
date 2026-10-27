@@ -6,98 +6,113 @@
 <title>Referencias de Reels</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
-/* Layout: encabezado con buscador y botón de colapsar, debajo una cuadrícula de tarjetas plegables (miniatura arriba, detalle al abrir). */
+/* Estética de Shu (gatito azul): azul cielo, amarillo crema y rosa de mejillas, contornos café tipo sticker y letra redonda. */
 :root {
-  --bg: #f6f3f5;
+  --bg: #fdf8ea;
+  --bg-2: #e7f3fd;
   --surface: #ffffff;
-  --ink: #1d1620;
-  --muted: #6d6272;
-  --line: #e6dfe8;
-  --accent: #e0244b;
+  --ink: #3b1d14;
+  --muted: #7a5e55;
+  --line: #3b1d14;
+  --accent: #2f95e8;
   --accent-ink: #ffffff;
-  --soft: #fbe9ee;
-  --shadow: 0 1px 2px rgba(40, 20, 50, .06), 0 8px 24px rgba(40, 20, 50, .07);
-  --f-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
-  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --soft: #fde7ea;
+  --cream: #fbefc4;
+  --star: #f5c33b;
+  --shadow: 0 4px 0 rgba(59, 29, 20, .9);
+  --f-display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --f-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #17111a; --surface: #221a26; --ink: #f4eef6; --muted: #a99bb0;
-    --line: #35293a; --accent: #ff5578; --accent-ink: #1a0d12; --soft: #3a2230;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    --bg: #161b2e; --bg-2: #1d2742; --surface: #232c48; --ink: #fdf3e4; --muted: #b9b3c9;
+    --line: #0d1020; --accent: #6cb8f6; --accent-ink: #10203a; --soft: #4a2c3d; --cream: #4a4230; --star: #f5c33b;
+    --shadow: 0 4px 0 rgba(0, 0, 0, .55);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #17111a; --surface: #221a26; --ink: #f4eef6; --muted: #a99bb0;
-  --line: #35293a; --accent: #ff5578; --accent-ink: #1a0d12; --soft: #3a2230;
-  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  --bg: #161b2e; --bg-2: #1d2742; --surface: #232c48; --ink: #fdf3e4; --muted: #b9b3c9;
+  --line: #0d1020; --accent: #6cb8f6; --accent-ink: #10203a; --soft: #4a2c3d; --cream: #4a4230; --star: #f5c33b;
+  --shadow: 0 4px 0 rgba(0, 0, 0, .55);
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  background: var(--bg); color: var(--ink); font-family: var(--f-body);
+  background: linear-gradient(180deg, var(--bg-2) 0, var(--bg) 360px) var(--bg);
+  color: var(--ink); font-family: var(--f-body);
   font-size: 15px; line-height: 1.5;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 32px 56px;
+  padding-block: 28px 56px;
 }
 .wrap { max-width: 1080px; margin: 0 auto; }
 header { display: flex; flex-direction: column; gap: 18px; margin-bottom: 28px; }
-.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
-h1 {
-  font-family: var(--f-display); font-weight: 800; font-size: clamp(34px, 7vw, 56px);
-  line-height: 1.02; margin: 4px 0 0; text-wrap: balance; letter-spacing: -.02em;
+.hero { display: flex; align-items: center; gap: 16px; }
+.logo { width: clamp(84px, 22vw, 128px); height: auto; flex: none; filter: drop-shadow(0 3px 0 rgba(59, 29, 20, .25)); }
+.eyebrow {
+  display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink); background: var(--cream); border: 2px solid var(--line); border-radius: 999px; padding: 2px 12px;
 }
-.sub { color: var(--muted); max-width: 52ch; margin: 8px 0 0; }
+h1 {
+  font-family: var(--f-display); font-weight: 800; font-size: clamp(34px, 8vw, 58px);
+  line-height: 1; margin: 8px 0 0; text-wrap: balance; letter-spacing: -.01em;
+}
+h1 span { color: var(--accent); }
+.sub { color: var(--muted); max-width: 52ch; margin: 0; font-weight: 500; }
 .tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .search {
   flex: 1 1 240px; min-width: 0; padding: 12px 16px; border-radius: 999px;
-  border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
-  font: inherit;
+  border: 2.5px solid var(--line); background: var(--surface); color: var(--ink);
+  font: inherit; font-weight: 700;
 }
-.search::placeholder { color: var(--muted); }
+.search::placeholder { color: var(--muted); font-weight: 500; }
 .search:focus-visible, button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .toggle {
-  padding: 12px 18px; border-radius: 999px; border: 1.5px solid var(--line);
-  background: var(--surface); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer;
+  padding: 12px 18px; border-radius: 999px; border: 2.5px solid var(--line);
+  background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 800; cursor: pointer;
+  box-shadow: 0 3px 0 var(--line);
 }
-.toggle:hover { border-color: var(--accent); }
-.count { color: var(--muted); font-size: 13px; margin-left: auto; }
+.toggle:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }
+.count { color: var(--muted); font-size: 13px; font-weight: 700; margin-left: auto; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; align-items: start; }
-.card { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--line); }
+.card { background: var(--surface); border-radius: 24px; box-shadow: var(--shadow); overflow: hidden; border: 2.5px solid var(--line); }
 .card summary { list-style: none; cursor: pointer; display: block; position: relative; }
 .card summary::-webkit-details-marker { display: none; }
-.thumb { position: relative; aspect-ratio: 3 / 4; background: var(--soft); overflow: hidden; }
+.thumb { position: relative; aspect-ratio: 3 / 4; background: var(--cream); overflow: hidden; }
 .thumb img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .thumb::after {
-  content: ""; position: absolute; inset: auto 0 0 0; height: 55%;
-  background: linear-gradient(to top, rgba(18, 8, 22, .82), rgba(18, 8, 22, 0));
+  content: ""; position: absolute; inset: auto 0 0 0; height: 50%;
+  background: linear-gradient(to top, rgba(30, 14, 10, .78), rgba(30, 14, 10, 0));
 }
 .who { position: absolute; left: 16px; right: 56px; bottom: 14px; z-index: 1; color: #fff; }
-.who small { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; opacity: .8; }
-.who strong { font-family: var(--f-display); font-size: 22px; line-height: 1.15; overflow-wrap: anywhere; }
+.who small { display: block; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
+.who strong { font-family: var(--f-display); font-weight: 800; font-size: 22px; line-height: 1.15; overflow-wrap: anywhere; }
 .chev {
-  position: absolute; right: 14px; bottom: 14px; z-index: 1; width: 32px; height: 32px; border-radius: 50%;
-  background: var(--accent); color: var(--accent-ink); display: grid; place-items: center;
+  position: absolute; right: 14px; bottom: 14px; z-index: 1; width: 34px; height: 34px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink); border: 2.5px solid #3b1d14; display: grid; place-items: center;
   transition: transform .2s ease;
 }
 .card[open] .chev { transform: rotate(180deg); }
-.body { padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 16px; }
+.body { padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 14px; }
 .body p { margin: 0; }
-.label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.label {
+  display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink); background: var(--soft); border-radius: 999px; padding: 1px 10px; margin-bottom: 6px;
+}
 .actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .btn {
-  display: inline-flex; align-items: center; gap: 8px; padding: 11px 16px; border-radius: 999px;
-  font-weight: 600; text-decoration: none; font-size: 14px;
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px;
+  font-weight: 800; text-decoration: none; font-size: 14px; border: 2.5px solid var(--line); box-shadow: 0 3px 0 var(--line);
 }
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }
 .btn.main { background: var(--accent); color: var(--accent-ink); }
-.btn.alt { background: var(--soft); color: var(--ink); }
-.btn:hover { filter: brightness(1.06); }
-.empty { grid-column: 1 / -1; color: var(--muted); padding: 40px 0; text-align: center; }
+.btn.alt { background: var(--cream); color: var(--ink); }
+.btn:hover { filter: brightness(1.05); }
+.empty { grid-column: 1 / -1; color: var(--muted); padding: 40px 0; text-align: center; font-weight: 700; }
 @media (prefers-reduced-motion: reduce) { .chev { transition: none; } }
 </style>
 </head>
@@ -105,11 +120,14 @@ h1 {
 
 <div class="wrap">
   <header>
-    <div>
-      <div class="eyebrow">Biblioteca de inspiración</div>
-      <h1>Referencias de Reels</h1>
-      <p class="sub">Videos para usar de guía. Abre cada tarjeta para ver de qué trata, ir al reel original o visitar el canal.</p>
+    <div class="hero">
+      <img class="logo" src="assets/shu-logo.png" alt="Logo de Shu" onerror="this.remove()">
+      <div>
+        <div class="eyebrow">✦ Shu World ✦</div>
+        <h1>Referencias de <span>Reels</span></h1>
+      </div>
     </div>
+    <p class="sub">Videos para usar de guía. Abre cada tarjeta para ver de qué trata, ir al reel original o visitar el canal.</p>
     <div class="tools">
       <input class="search" id="q" type="search" placeholder="Buscar por usuario o tema" aria-label="Buscar">
       <button class="toggle" id="tg" type="button">Colapsar todo</button>
@@ -128,6 +146,111 @@ var REELS = [
     url: "https://www.rednote.com/discovery/item/6a842b030000000022014c44?xsec_token=ABjfJ0TSo7-aqoIY7q0PcGmZutsIiLuNhvEFdINGKiEfo=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/5a32083111be103bbc0fa0ce",
     desc: "Vlog de comida para uno: fideos picantes coreanos con queso, spam, empanada y huevo. Cocina inmersiva."
+  },
+  {
+    user: "爱吃的冰淇淋",
+    thumb: "assets/reel-002.jpg",
+    url: "https://www.rednote.com/discovery/item/6a71b747000000002501629a?xsec_token=ABJfrUwGmf5Q2NSApaUTvEGTMXFAd2keygi4sqm6ZTbZ0=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/5db6d39d0000000001001ab3",
+    desc: "Vlog de comida para uno: fideos Buldak con huevo marinado, spam y tteokbokki, comidos frente a la tableta."
+  },
+  {
+    user: "打糕人",
+    thumb: "assets/reel-003.jpg",
+    url: "https://www.rednote.com/discovery/item/6a93ffef0000000007007427?xsec_token=ABBLaKmJfNvw6XFQR4IQS8iCPn5ITZbZtnkPNOUgjD_Ho=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/61554e4b000000001f0350c0",
+    desc: "Cocina inmersiva: fideos Buldak de vaso con una cascada de queso derretido."
+  },
+  {
+    user: "贪吃的瓜瓜",
+    thumb: "assets/reel-004.jpg",
+    url: "https://www.rednote.com/discovery/item/67f52dd9000000001b03e3cc?xsec_token=AByVhLbjD2OI602rr4LRJv7MBp-Z8Se2VSEBmgxtNZn10=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/5c63ffd80000000010031c6a",
+    desc: "Truco paso a paso para que los fideos Buldak queden espesos y cremosos."
+  },
+  {
+    user: "柚柚小食记",
+    thumb: "assets/reel-005.jpg",
+    url: "https://www.rednote.com/discovery/item/6a6b056900000000140078d6?xsec_token=AB8WLB3osM52kzR1PZ_-jkBkUPle7wkCV8_41-7RMgxjM=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/5c4b2d60000000001201124f",
+    desc: "Fideos Buldak con queso y salsa cremosa, bolitas de camarón, salchichas, tteokbokki y huevo frito."
+  },
+  {
+    user: "小春卷儿",
+    thumb: "assets/reel-006.jpg",
+    url: "https://www.rednote.com/discovery/item/6a6d8406000000002702164d?xsec_token=AByrJwV5y6nGITCLZPdrGxvmRYhLC7Q-CWVP3mcaFrQFc=&xsec_source=pc_search&source=web_note_detail_r10",
+    channel: "https://www.rednote.com/user/profile/5a9807024eacab4de892954c",
+    desc: "Vlog nocturno para uno: un plato de fideos instantáneos como momento de calma al final del día."
+  },
+  {
+    user: "小七喝不胖",
+    thumb: "assets/reel-007.jpg",
+    url: "https://www.rednote.com/discovery/item/6a7ad3310000000026034b62?xsec_token=AB_OnaOE9yJgHBKXdpFbHffEdRPWPLj8x3ojzJCvv5QmY=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/651cc9a90000000024016859",
+    desc: "Cocina inmersiva: fideos Buldak con muchísimo queso, preparados para una amiga."
+  },
+  {
+    user: "樱桃小不点点",
+    thumb: "assets/reel-008.jpg",
+    url: "https://www.rednote.com/discovery/item/69be87300000000023024468?xsec_token=AB0ZfCDR6tURV8elAHQQTRg7HXkxYYxBaumckm7D3amnQ=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/681b8a20000000000d0082e4",
+    desc: "Fideos Buldak de crema en vaso, con queso y una mesa llena de decoración kawaii."
+  },
+  {
+    user: "叮当星小饱",
+    thumb: "assets/reel-009.jpg",
+    url: "https://www.rednote.com/discovery/item/68652b79000000001203e6db?xsec_token=AB1PGLdkinea91yXKgbINIozUAktHAlqvtATJPmnUazoU=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/5b875b278ca95100012a167e",
+    desc: "Cena nocturna ASMR: chica que vive sola prepara Buldak \"de lujo\" con queso, huevo, salchichas y tteokbokki."
+  },
+  {
+    user: "羊羊的小日常",
+    thumb: "assets/reel-010.jpg",
+    url: "https://www.rednote.com/discovery/item/6a7014890000000033030a47?xsec_token=ABugDfDJ8U01zQbvz8EzGsAKbaB7IJOsTtGARBYW1a7RA=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/5c8f0a7900000000100324c6",
+    desc: "Fideos Buldak con queso y bolitas de camarón: picantes, cremosos y muy antojables."
+  },
+  {
+    user: "是琰不是甜",
+    thumb: "assets/reel-011.jpg",
+    url: "https://www.rednote.com/discovery/item/6a4ba7580000000017028d8b?xsec_token=ABq-v9igbdu34VUysHatk0k-pXw0tnRLs_qqRBXnfUsuI=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/55e5a9d358944665feef6e15",
+    desc: "Cómo comer fideos Buldak sin que piquen: con crema y queso."
+  },
+  {
+    user: "大马蜜吃美食",
+    thumb: "assets/reel-012.jpg",
+    url: "https://www.rednote.com/discovery/item/69b1708e000000002202ebea?xsec_token=AB9lpfZOuRmjkPORgVxvyUgk3xXqAImT5BnPWXit17mmc=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/62e68517000000001e01f40d",
+    desc: "Comida callejera nocturna en Malasia: Buldak de lujo servido desde la cajuela de un coche."
+  },
+  {
+    user: "小春卷儿",
+    thumb: "assets/reel-013.jpg",
+    url: "https://www.rednote.com/discovery/item/6a98d05e000000002902f672?xsec_token=ABGaY0s9P8OqQfKpLLl_t8Uts0nQnQI9eF5YAXfwHRuGQ=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/5a9807024eacab4de892954c",
+    desc: "Vlog para uno: un plato de fideos instantáneos \"de lujo\" después del trabajo."
+  },
+  {
+    user: "叮当星小饱",
+    thumb: "assets/reel-014.jpg",
+    url: "https://www.rednote.com/discovery/item/6ad740400000000027014aff?xsec_token=ABOqEqYvYggcqf1vN_irGC1DeHGKv7Gc8K4ijbSEf3Pdo=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/5b875b278ca95100012a167e",
+    desc: "Otra cena nocturna inmersiva con Buldak de lujo, queso, croquetas y huevo (con anuncio de leche)."
+  },
+  {
+    user: "Lucky的美食日记",
+    thumb: "assets/reel-015.jpg",
+    url: "https://www.rednote.com/discovery/item/6adb3a4a000000002c0166ef?xsec_token=ABAfCgA59E1BiK2FfSzBYyJEO46U5SNO3AyS33FY87DLk=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/68f5fe090000000037003c7f",
+    desc: "Buldak en salsa cremosa coreana con empanadillas doradas, salchicha y tteokbokki."
+  },
+  {
+    user: "蛋糕-好甜",
+    thumb: "assets/reel-016.jpg",
+    url: "https://www.rednote.com/discovery/item/67ecdb6d000000001c028065?xsec_token=ABXd33W632Cmpet3NyYezCFv83vcghFah1Np9Q0P17F0g=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/5c6d40310000000010015316",
+    desc: "Receta creativa: camarones empanizados con papa y queso derretido en forma de foquitas."
   }
 ];
 
