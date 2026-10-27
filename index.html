@@ -411,6 +411,9 @@ function render() {
     return (pestana === "todos" || estado(r) === pestana) &&
       (!term || (r.user + " " + r.desc).toLowerCase().indexOf(term) !== -1);
   });
+  // los que llevan medallita NUEVO van hasta arriba (el más reciente primero); el resto queda en su orden
+  var nuevos = list.filter(function (r) { return estado(r) === "pendientes" && esNuevo(r); }).reverse();
+  list = nuevos.concat(list.filter(function (r) { return nuevos.indexOf(r) === -1; }));
   ct.textContent = list.length + (list.length === 1 ? " reel" : " reels");
   if (!list.length) {
     var p = PESTANAS.filter(function (x) { return x.id === pestana; })[0];
