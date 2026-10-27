@@ -127,6 +127,17 @@ h1 span { color: var(--accent); }
 .tab b { display: inline-block; min-width: 22px; margin-left: 4px; padding: 0 6px; border-radius: 999px; background: var(--cream); font-size: 12px; }
 .tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
 .tab[aria-selected="true"] b { background: var(--accent); color: var(--accent-ink); }
+/* Etiquetas para filtrar */
+.chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; margin: -6px -2px 18px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; padding: 5px 12px; border-radius: 999px; border: 2px dashed var(--line);
+  background: transparent; color: var(--ink); font: inherit; font-weight: 700; font-size: 13px; cursor: pointer;
+}
+.chip b { font-size: 11px; opacity: .7; }
+.chip[aria-pressed="true"] { background: #fbd3d8; color: #3b1d14; border-style: solid; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tags span { font-size: 12px; font-weight: 700; color: var(--muted); border: 1.5px solid var(--soft); border-radius: 999px; padding: 1px 9px; }
 /* Usuario con botón de copiar */
 .user { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .user span { font-weight: 800; font-size: 16px; overflow-wrap: anywhere; }
@@ -194,6 +205,7 @@ h1 span { color: var(--accent); }
     </div>
   </header>
   <div class="tabs" id="tabs" role="tablist" aria-label="Filtrar reels"></div>
+  <div class="chips" id="chips" aria-label="Filtrar por etiqueta"></div>
   <main class="grid" id="grid"></main>
   <div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-txt"></span><button type="button" id="deshacer">Deshacer</button></div>
 </div>
@@ -206,112 +218,128 @@ var REELS = [
     thumb: "assets/reel-001.jpg",
     url: "https://www.rednote.com/discovery/item/6a842b030000000022014c44?xsec_token=ABjfJ0TSo7-aqoIY7q0PcGmZutsIiLuNhvEFdINGKiEfo=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/5a32083111be103bbc0fa0ce",
-    desc: "Vlog de comida para uno: fideos picantes coreanos con queso, spam, empanada y huevo. Cocina inmersiva."
+    desc: "Vlog de comida para uno: fideos picantes coreanos con queso, spam, empanada y huevo. Cocina inmersiva.",
+    tags: ["buldak", "vlog", "asmr"]
   },
   {
     user: "爱吃的冰淇淋",
     thumb: "assets/reel-002.jpg",
     url: "https://www.rednote.com/discovery/item/6a71b747000000002501629a?xsec_token=ABJfrUwGmf5Q2NSApaUTvEGTMXFAd2keygi4sqm6ZTbZ0=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/5db6d39d0000000001001ab3",
-    desc: "Vlog de comida para uno: fideos Buldak con huevo marinado, spam y tteokbokki, comidos frente a la tableta."
+    desc: "Vlog de comida para uno: fideos Buldak con huevo marinado, spam y tteokbokki, comidos frente a la tableta.",
+    tags: ["buldak", "vlog"]
   },
   {
     user: "打糕人",
     thumb: "assets/reel-003.jpg",
     url: "https://www.rednote.com/discovery/item/6a93ffef0000000007007427?xsec_token=ABBLaKmJfNvw6XFQR4IQS8iCPn5ITZbZtnkPNOUgjD_Ho=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/61554e4b000000001f0350c0",
-    desc: "Cocina inmersiva: fideos Buldak de vaso con una cascada de queso derretido."
+    desc: "Cocina inmersiva: fideos Buldak de vaso con una cascada de queso derretido.",
+    tags: ["buldak", "asmr"]
   },
   {
     user: "贪吃的瓜瓜",
     thumb: "assets/reel-004.jpg",
     url: "https://www.rednote.com/discovery/item/67f52dd9000000001b03e3cc?xsec_token=AByVhLbjD2OI602rr4LRJv7MBp-Z8Se2VSEBmgxtNZn10=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/5c63ffd80000000010031c6a",
-    desc: "Truco paso a paso para que los fideos Buldak queden espesos y cremosos."
+    desc: "Truco paso a paso para que los fideos Buldak queden espesos y cremosos.",
+    tags: ["buldak", "truco"]
   },
   {
     user: "柚柚小食记",
     thumb: "assets/reel-005.jpg",
     url: "https://www.rednote.com/discovery/item/6a6b056900000000140078d6?xsec_token=AB8WLB3osM52kzR1PZ_-jkBkUPle7wkCV8_41-7RMgxjM=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/5c4b2d60000000001201124f",
-    desc: "Fideos Buldak con queso y salsa cremosa, bolitas de camarón, salchichas, tteokbokki y huevo frito."
+    desc: "Fideos Buldak con queso y salsa cremosa, bolitas de camarón, salchichas, tteokbokki y huevo frito.",
+    tags: ["buldak"]
   },
   {
     user: "小春卷儿",
     thumb: "assets/reel-006.jpg",
     url: "https://www.rednote.com/discovery/item/6a6d8406000000002702164d?xsec_token=AByrJwV5y6nGITCLZPdrGxvmRYhLC7Q-CWVP3mcaFrQFc=&xsec_source=pc_search&source=web_note_detail_r10",
     channel: "https://www.rednote.com/user/profile/5a9807024eacab4de892954c",
-    desc: "Vlog nocturno para uno: un plato de fideos instantáneos como momento de calma al final del día."
+    desc: "Vlog nocturno para uno: un plato de fideos instantáneos como momento de calma al final del día.",
+    tags: ["buldak", "vlog", "nocturno"]
   },
   {
     user: "小七喝不胖",
     thumb: "assets/reel-007.jpg",
     url: "https://www.rednote.com/discovery/item/6a7ad3310000000026034b62?xsec_token=AB_OnaOE9yJgHBKXdpFbHffEdRPWPLj8x3ojzJCvv5QmY=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/651cc9a90000000024016859",
-    desc: "Cocina inmersiva: fideos Buldak con muchísimo queso, preparados para una amiga."
+    desc: "Cocina inmersiva: fideos Buldak con muchísimo queso, preparados para una amiga.",
+    tags: ["buldak", "asmr"]
   },
   {
     user: "樱桃小不点点",
     thumb: "assets/reel-008.jpg",
     url: "https://www.rednote.com/discovery/item/69be87300000000023024468?xsec_token=AB0ZfCDR6tURV8elAHQQTRg7HXkxYYxBaumckm7D3amnQ=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/681b8a20000000000d0082e4",
-    desc: "Fideos Buldak de crema en vaso, con queso y una mesa llena de decoración kawaii."
+    desc: "Fideos Buldak de crema en vaso, con queso y una mesa llena de decoración kawaii.",
+    tags: ["buldak"]
   },
   {
     user: "叮当星小饱",
     thumb: "assets/reel-009.jpg",
     url: "https://www.rednote.com/discovery/item/68652b79000000001203e6db?xsec_token=AB1PGLdkinea91yXKgbINIozUAktHAlqvtATJPmnUazoU=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/5b875b278ca95100012a167e",
-    desc: "Cena nocturna ASMR: chica que vive sola prepara Buldak \"de lujo\" con queso, huevo, salchichas y tteokbokki."
+    desc: "Cena nocturna ASMR: chica que vive sola prepara Buldak \"de lujo\" con queso, huevo, salchichas y tteokbokki.",
+    tags: ["buldak", "asmr", "nocturno", "vlog"]
   },
   {
     user: "羊羊的小日常",
     thumb: "assets/reel-010.jpg",
     url: "https://www.rednote.com/discovery/item/6a7014890000000033030a47?xsec_token=ABugDfDJ8U01zQbvz8EzGsAKbaB7IJOsTtGARBYW1a7RA=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/5c8f0a7900000000100324c6",
-    desc: "Fideos Buldak con queso y bolitas de camarón: picantes, cremosos y muy antojables."
+    desc: "Fideos Buldak con queso y bolitas de camarón: picantes, cremosos y muy antojables.",
+    tags: ["buldak"]
   },
   {
     user: "是琰不是甜",
     thumb: "assets/reel-011.jpg",
     url: "https://www.rednote.com/discovery/item/6a4ba7580000000017028d8b?xsec_token=ABq-v9igbdu34VUysHatk0k-pXw0tnRLs_qqRBXnfUsuI=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/55e5a9d358944665feef6e15",
-    desc: "Cómo comer fideos Buldak sin que piquen: con crema y queso."
+    desc: "Cómo comer fideos Buldak sin que piquen: con crema y queso.",
+    tags: ["buldak", "truco"]
   },
   {
     user: "大马蜜吃美食",
     thumb: "assets/reel-012.jpg",
     url: "https://www.rednote.com/discovery/item/69b1708e000000002202ebea?xsec_token=AB9lpfZOuRmjkPORgVxvyUgk3xXqAImT5BnPWXit17mmc=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/62e68517000000001e01f40d",
-    desc: "Comida callejera nocturna en Malasia: Buldak de lujo servido desde la cajuela de un coche."
+    desc: "Comida callejera nocturna en Malasia: Buldak de lujo servido desde la cajuela de un coche.",
+    tags: ["buldak", "nocturno"]
   },
   {
     user: "小春卷儿",
     thumb: "assets/reel-013.jpg",
     url: "https://www.rednote.com/discovery/item/6a98d05e000000002902f672?xsec_token=ABGaY0s9P8OqQfKpLLl_t8Uts0nQnQI9eF5YAXfwHRuGQ=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/5a9807024eacab4de892954c",
-    desc: "Vlog para uno: un plato de fideos instantáneos \"de lujo\" después del trabajo."
+    desc: "Vlog para uno: un plato de fideos instantáneos \"de lujo\" después del trabajo.",
+    tags: ["buldak", "vlog"]
   },
   {
     user: "叮当星小饱",
     thumb: "assets/reel-014.jpg",
     url: "https://www.rednote.com/discovery/item/6ad740400000000027014aff?xsec_token=ABOqEqYvYggcqf1vN_irGC1DeHGKv7Gc8K4ijbSEf3Pdo=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/5b875b278ca95100012a167e",
-    desc: "Otra cena nocturna inmersiva con Buldak de lujo, queso, croquetas y huevo (con anuncio de leche)."
+    desc: "Otra cena nocturna inmersiva con Buldak de lujo, queso, croquetas y huevo (con anuncio de leche).",
+    tags: ["buldak", "asmr", "nocturno"]
   },
   {
     user: "Lucky的美食日记",
     thumb: "assets/reel-015.jpg",
     url: "https://www.rednote.com/discovery/item/6adb3a4a000000002c0166ef?xsec_token=ABAfCgA59E1BiK2FfSzBYyJEO46U5SNO3AyS33FY87DLk=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/68f5fe090000000037003c7f",
-    desc: "Buldak en salsa cremosa coreana con empanadillas doradas, salchicha y tteokbokki."
+    desc: "Buldak en salsa cremosa coreana con empanadillas doradas, salchicha y tteokbokki.",
+    tags: ["buldak"]
   },
   {
     user: "蛋糕-好甜",
     thumb: "assets/reel-016.jpg",
     url: "https://www.rednote.com/discovery/item/67ecdb6d000000001c028065?xsec_token=ABXd33W632Cmpet3NyYezCFv83vcghFah1Np9Q0P17F0g=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/5c6d40310000000010015316",
-    desc: "Receta creativa: camarones empanizados con papa y queso derretido en forma de foquitas."
+    desc: "Receta creativa: camarones empanizados con papa y queso derretido en forma de foquitas.",
+    tags: ["receta"]
   },
   {
     user: "Bella",
@@ -319,6 +347,7 @@ var REELS = [
     url: "https://www.rednote.com/discovery/item/6877be3f000000001c035fc7?xsec_token=ABd7xGkt3sobtTldRhc1TlmFtgjy8vUc7V46JF_DJ-wlc=&xsec_source=pc_search&source=web_search_result_notes",
     channel: "https://www.rednote.com/user/profile/648ddac8000000001c0286b7",
     desc: "Antojo de las 2 de la mañana: fideos Buldak de vaso con queso cremoso, comidos en un escritorio rosa.",
+    tags: ["buldak", "nocturno", "vlog", "asmr"],
     agregado: "2026-10-27"
   }
 ];
@@ -343,6 +372,19 @@ var marcas = {};
 try { marcas = JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) { marcas = {}; }
 var pestana = "pendientes";
 try { pestana = localStorage.getItem("shu-pestana") || pestana; } catch (e) {}
+// Etiquetas para filtrar; cada reel lleva sus ids en "tags"
+var ETIQUETAS = [
+  { id: "buldak", nombre: "Buldak / fideos" },
+  { id: "asmr", nombre: "ASMR" },
+  { id: "vlog", nombre: "Vlog para uno" },
+  { id: "nocturno", nombre: "Nocturno" },
+  { id: "receta", nombre: "Receta creativa" },
+  { id: "truco", nombre: "Truco / tutorial" }
+];
+var etiqueta = "";
+try { etiqueta = localStorage.getItem("shu-etiqueta") || ""; } catch (e) {}
+if (!ETIQUETAS.some(function (t) { return t.id === etiqueta; })) etiqueta = "";
+var chips = document.getElementById("chips");
 var PESTANAS = [
   { id: "pendientes", nombre: "Pendientes", vacio: "¡Ya revisaste todos! ✦ Cuando lleguen reels nuevos aparecerán aquí." },
   { id: "usado", nombre: "Ya utilicé", vacio: "Todavía no marcas ningún reel como utilizado." },
@@ -399,6 +441,19 @@ function avisar(txt, alDeshacer) {
   toastTimer = setTimeout(function () { toast.classList.remove("ver"); deshacer = null; }, 5000);
 }
 
+function pintarEtiquetas() {
+  var enPestana = REELS.filter(function (r) { return pestana === "todos" || estado(r) === pestana; });
+  chips.innerHTML = [{ id: "", nombre: "Todas" }].concat(ETIQUETAS).map(function (t) {
+    var n = t.id ? enPestana.filter(function (r) { return (r.tags || []).indexOf(t.id) !== -1; }).length : enPestana.length;
+    return '<button class="chip" type="button" data-t="' + t.id + '" aria-pressed="' + (t.id === etiqueta) + '">' +
+      t.nombre + ' <b>' + n + '</b></button>';
+  }).join("");
+}
+function nombreEtiqueta(id) {
+  var t = ETIQUETAS.filter(function (x) { return x.id === id; })[0];
+  return t ? t.nombre : id;
+}
+
 function pintarPestanas() {
   tabs.innerHTML = PESTANAS.map(function (p) {
     var n = p.id === "todos" ? REELS.length : REELS.filter(function (r) { return estado(r) === p.id; }).length;
@@ -409,10 +464,13 @@ function pintarPestanas() {
 
 function render() {
   pintarPestanas();
+  pintarEtiquetas();
   var term = q.value.trim().toLowerCase();
   var list = REELS.filter(function (r) {
+    var tags = r.tags || [];
     return (pestana === "todos" || estado(r) === pestana) &&
-      (!term || (r.user + " " + r.desc).toLowerCase().indexOf(term) !== -1);
+      (!etiqueta || tags.indexOf(etiqueta) !== -1) &&
+      (!term || (r.user + " " + r.desc + " " + tags.map(nombreEtiqueta).join(" ")).toLowerCase().indexOf(term) !== -1);
   });
   // los que llevan medallita NUEVO van hasta arriba (el más reciente primero); el resto queda en su orden
   var nuevos = list.filter(function (r) { return estado(r) === "pendientes" && esNuevo(r); }).reverse();
@@ -441,7 +499,9 @@ function render() {
       '<div class="body">' +
       '<div><div class="label">Usuario en RedNote</div><div class="user"><span>' + esc(r.user) + '</span>' +
       '<button class="copiar" type="button" data-user="' + esc(r.user) + '">' + COPY + ' Copiar</button></div></div>' +
-      '<div><div class="label">De qué trata</div><p>' + esc(r.desc) + '</p></div>' +
+      '<div><div class="label">De qué trata</div><p>' + esc(r.desc) + '</p>' +
+      ((r.tags || []).length ? '<div class="tags">' + r.tags.map(function (t) { return '<span>' + esc(nombreEtiqueta(t)) + '</span>'; }).join("") + '</div>' : '') +
+      '</div>' +
       '<div class="actions">' +
       '<a class="btn main" href="' + esc(r.url) + '" target="_blank" rel="noopener">Ver reel ' + ARR + '</a>' +
       '<a class="btn alt" href="' + esc(r.channel) + '" target="_blank" rel="noopener">Ver canal ' + ARR + '</a>' +
@@ -478,6 +538,13 @@ tabs.addEventListener("click", function (ev) {
   if (!b) return;
   pestana = b.getAttribute("data-p");
   try { localStorage.setItem("shu-pestana", pestana); } catch (e) {}
+  render();
+});
+chips.addEventListener("click", function (ev) {
+  var b = ev.target.closest(".chip");
+  if (!b) return;
+  etiqueta = b.getAttribute("data-t");
+  try { localStorage.setItem("shu-etiqueta", etiqueta); } catch (e) {}
   render();
 });
 document.getElementById("deshacer").addEventListener("click", function () {
