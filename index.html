@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Referencias de Reels</title>
+<title>ShuWorld</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/shu-logo.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
@@ -113,7 +116,57 @@ h1 span { color: var(--accent); }
 .btn.alt { background: var(--cream); color: var(--ink); }
 .btn:hover { filter: brightness(1.05); }
 .empty { grid-column: 1 / -1; color: var(--muted); padding: 40px 0; text-align: center; font-weight: 700; }
-@media (prefers-reduced-motion: reduce) { .chev { transition: none; } }
+/* Pestañas: Pendientes / Ya utilicé / Descartados / Todos */
+.tabs { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; margin: -10px -2px 16px; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: none; padding: 8px 14px; border-radius: 999px; border: 2.5px solid var(--line);
+  background: var(--surface); color: var(--ink); font: inherit; font-weight: 800; font-size: 14px; cursor: pointer;
+}
+.tab b { display: inline-block; min-width: 22px; margin-left: 4px; padding: 0 6px; border-radius: 999px; background: var(--cream); font-size: 12px; }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.tab[aria-selected="true"] b { background: var(--accent); color: var(--accent-ink); }
+/* Usuario con botón de copiar */
+.user { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.user span { font-weight: 800; font-size: 16px; overflow-wrap: anywhere; }
+.copiar {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
+  border: 2px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-weight: 800;
+  font-size: 13px; cursor: pointer; box-shadow: 0 2px 0 var(--line);
+}
+.copiar:active { transform: translateY(2px); box-shadow: none; }
+/* Marcar un reel */
+.mark { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 14px; border-top: 2px dashed var(--soft); }
+.mark button {
+  display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 10px; border-radius: 16px;
+  border: 2.5px solid var(--line); box-shadow: 0 3px 0 var(--line); font: inherit; font-weight: 800; font-size: 15px;
+  cursor: pointer; color: #3b1d14;
+}
+.mark button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }
+.mark .usar { background: #bfe3fb; }
+.mark .descartar { background: #fbd3d8; }
+.mark .volver { grid-column: 1 / -1; background: var(--cream); color: var(--ink); }
+.sello {
+  position: absolute; top: 14px; left: 14px; z-index: 1; padding: 4px 12px; border-radius: 999px;
+  border: 2.5px solid #3b1d14; font-weight: 800; font-size: 13px; color: #3b1d14; transform: rotate(-4deg);
+}
+.sello.usado { background: #bfe3fb; }
+.sello.descartado { background: #fbd3d8; }
+.card.descartado .thumb img { filter: grayscale(.7); opacity: .75; }
+/* Aviso con "Deshacer" */
+.toast {
+  position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom, 0px)); z-index: 10;
+  transform: translate(-50%, 140%); transition: transform .25s ease;
+  display: flex; align-items: center; gap: 14px; width: max-content; max-width: calc(100% - 32px);
+  padding: 10px 10px 10px 18px; border-radius: 999px; background: var(--ink); color: var(--bg); font-weight: 700;
+  border: 2.5px solid #3b1d14; box-shadow: 0 4px 0 rgba(59, 29, 20, .5);
+}
+.toast.ver { transform: translate(-50%, 0); }
+.toast button {
+  padding: 6px 14px; border-radius: 999px; border: 0; background: var(--star); color: #3b1d14;
+  font: inherit; font-weight: 800; cursor: pointer;
+}
+@media (prefers-reduced-motion: reduce) { .chev, .toast { transition: none; } }
 </style>
 </head>
 <body>
@@ -134,7 +187,9 @@ h1 span { color: var(--accent); }
       <span class="count" id="ct"></span>
     </div>
   </header>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Filtrar reels"></div>
   <main class="grid" id="grid"></main>
+  <div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-txt"></span><button type="button" id="deshacer">Deshacer</button></div>
 </div>
 
 <script>
@@ -265,29 +320,104 @@ function esc(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+// Marcas de "Ya utilicé" / "Descartar": se guardan en el navegador de quien las hace (su celular)
+var CLAVE = "shu-marcas";
+var marcas = {};
+try { marcas = JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) { marcas = {}; }
+var pestana = "pendientes";
+try { pestana = localStorage.getItem("shu-pestana") || pestana; } catch (e) {}
+var PESTANAS = [
+  { id: "pendientes", nombre: "Pendientes", vacio: "¡Ya revisaste todos! ✦ Cuando lleguen reels nuevos aparecerán aquí." },
+  { id: "usado", nombre: "Ya utilicé", vacio: "Todavía no marcas ningún reel como utilizado." },
+  { id: "descartado", nombre: "Descartados", vacio: "No has descartado ningún reel." },
+  { id: "todos", nombre: "Todos", vacio: "No hay reels que coincidan con esa búsqueda." }
+];
+var COPY = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M10.5 3.5A1.5 1.5 0 0 0 9 2H4a2 2 0 0 0-2 2v5a1.5 1.5 0 0 0 1.5 1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+var tabs = document.getElementById("tabs");
+var toast = document.getElementById("toast");
+var toastTxt = document.getElementById("toast-txt");
+var deshacer = null, toastTimer = null;
+
+function rid(r) { var m = r.url.match(/item\/(\w+)/); return m ? m[1] : r.url; }
+function estado(r) { return marcas[rid(r)] || "pendientes"; }
+function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(marcas)); } catch (e) {} }
+
+function marcar(id, valor) {
+  var antes = marcas[id];
+  if (valor) marcas[id] = valor; else delete marcas[id];
+  guardar();
+  render();
+  var txt = valor === "usado" ? "Movido a «Ya utilicé» ✓" : valor === "descartado" ? "Reel descartado" : "De vuelta en pendientes";
+  avisar(txt, function () { if (antes) marcas[id] = antes; else delete marcas[id]; guardar(); render(); });
+}
+
+// Copia el usuario para buscarlo en la app de RedNote
+function copiar(user) {
+  var listo = function () { avisar("Usuario copiado: " + user + " ✓", null); };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(user).then(listo, function () { copiarViejo(user); listo(); });
+  } else { copiarViejo(user); listo(); }
+}
+function copiarViejo(user) {
+  var t = document.createElement("textarea");
+  t.value = user; t.setAttribute("readonly", ""); t.style.position = "fixed"; t.style.opacity = "0";
+  document.body.appendChild(t); t.select();
+  try { document.execCommand("copy"); } catch (e) {}
+  t.remove();
+}
+
+function avisar(txt, alDeshacer) {
+  toastTxt.textContent = txt;
+  deshacer = alDeshacer;
+  document.getElementById("deshacer").hidden = !alDeshacer;
+  toast.classList.add("ver");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { toast.classList.remove("ver"); deshacer = null; }, 5000);
+}
+
+function pintarPestanas() {
+  tabs.innerHTML = PESTANAS.map(function (p) {
+    var n = p.id === "todos" ? REELS.length : REELS.filter(function (r) { return estado(r) === p.id; }).length;
+    return '<button class="tab" type="button" role="tab" data-p="' + p.id + '" aria-selected="' + (p.id === pestana) + '">' +
+      p.nombre + '<b>' + n + '</b></button>';
+  }).join("");
+}
+
 function render() {
+  pintarPestanas();
   var term = q.value.trim().toLowerCase();
   var list = REELS.filter(function (r) {
-    return !term || (r.user + " " + r.desc).toLowerCase().indexOf(term) !== -1;
+    return (pestana === "todos" || estado(r) === pestana) &&
+      (!term || (r.user + " " + r.desc).toLowerCase().indexOf(term) !== -1);
   });
   ct.textContent = list.length + (list.length === 1 ? " reel" : " reels");
   if (!list.length) {
-    grid.innerHTML = '<p class="empty">No hay reels que coincidan con esa búsqueda.</p>';
+    var p = PESTANAS.filter(function (x) { return x.id === pestana; })[0];
+    grid.innerHTML = '<p class="empty">' + (term ? "No hay reels que coincidan con esa búsqueda." : p.vacio) + '</p>';
+    syncLabel();
     return;
   }
   grid.innerHTML = list.map(function (r) {
+    var e = estado(r), id = esc(rid(r));
     // si la portada no carga, se quita la imagen y queda el fondo de color de .thumb
     var img = r.thumb ? '<img src="' + esc(r.thumb) + '" alt="Portada del reel de ' + esc(r.user) + '" loading="lazy" onerror="this.remove()">' : '';
-    return '<details class="card" open>' +
-      '<summary><div class="thumb">' + img +
+    var sello = e === "usado" ? '<span class="sello usado">✓ Ya lo usé</span>' : e === "descartado" ? '<span class="sello descartado">✕ Descartado</span>' : '';
+    var botones = e === "pendientes"
+      ? '<button class="usar" type="button" data-id="' + id + '" data-v="usado">✓ Ya utilicé</button>' +
+        '<button class="descartar" type="button" data-id="' + id + '" data-v="descartado">✕ Descartar</button>'
+      : '<button class="volver" type="button" data-id="' + id + '" data-v="">↺ Volver a pendientes</button>';
+    return '<details class="card ' + e + '" open>' +
+      '<summary><div class="thumb">' + img + sello +
       '<div class="who"><small>Creador</small><strong>' + esc(r.user) + '</strong></div>' +
       '<span class="chev">' + CHEV + '</span></div></summary>' +
       '<div class="body">' +
+      '<div><div class="label">Usuario en RedNote</div><div class="user"><span>' + esc(r.user) + '</span>' +
+      '<button class="copiar" type="button" data-user="' + esc(r.user) + '">' + COPY + ' Copiar</button></div></div>' +
       '<div><div class="label">De qué trata</div><p>' + esc(r.desc) + '</p></div>' +
       '<div class="actions">' +
       '<a class="btn main" href="' + esc(r.url) + '" target="_blank" rel="noopener">Ver reel ' + ARR + '</a>' +
       '<a class="btn alt" href="' + esc(r.channel) + '" target="_blank" rel="noopener">Ver canal ' + ARR + '</a>' +
-      '</div></div></details>';
+      '</div><div class="mark">' + botones + '</div></div></details>';
   }).join("");
   syncLabel();
 }
@@ -305,6 +435,24 @@ tg.addEventListener("click", function () {
   syncLabel();
 });
 grid.addEventListener("toggle", syncLabel, true);
+grid.addEventListener("click", function (ev) {
+  var c = ev.target.closest(".copiar");
+  if (c) { copiar(c.getAttribute("data-user")); return; }
+  var b = ev.target.closest(".mark button");
+  if (b) marcar(b.getAttribute("data-id"), b.getAttribute("data-v"));
+});
+tabs.addEventListener("click", function (ev) {
+  var b = ev.target.closest(".tab");
+  if (!b) return;
+  pestana = b.getAttribute("data-p");
+  try { localStorage.setItem("shu-pestana", pestana); } catch (e) {}
+  render();
+});
+document.getElementById("deshacer").addEventListener("click", function () {
+  if (deshacer) deshacer();
+  deshacer = null;
+  toast.classList.remove("ver");
+});
 q.addEventListener("input", render);
 render();
 </script>
