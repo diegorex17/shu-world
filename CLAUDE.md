@@ -8,7 +8,9 @@ Página de una sola hoja (`index.html`) con reels de referencia para Shu. Se pub
 2. Saca: título, nombre de usuario, link del perfil (sin `xsec_token`) y la portada (`meta og:image`).
 3. Baja la portada y guárdala como JPG (ancho máx. 720) en `assets/` con el siguiente número: `reel-002.jpg`, `reel-003.jpg`...
 4. Escribe `desc`: una línea en español que diga de qué trata el video.
-5. Agrega `{ user, thumb, url, channel, desc }` al final del arreglo `REELS` en `index.html`, commit y push.
+5. Agrega `{ user, thumb, url, channel, desc, agregado: "AAAA-MM-DD" }` (fecha de hoy) al final del arreglo
+   `REELS` en `index.html`, commit y push. Con `agregado`, la tarjeta muestra la medallita "✦ NUEVO" durante
+   `DIAS_NUEVO` días (7) mientras siga en Pendientes.
 
 Si no puedes leer un link, di qué datos faltan; no los inventes. Los links con `xsec_token` pueden caducar: avisa si uno deja de abrir.
 
