@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Referencias de Reels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: encabezado con buscador y botón de colapsar, debajo una cuadrícula de tarjetas plegables (miniatura arriba, detalle al abrir). */
+:root {
+  --bg: #f6f3f5;
+  --surface: #ffffff;
+  --ink: #1d1620;
+  --muted: #6d6272;
+  --line: #e6dfe8;
+  --accent: #e0244b;
+  --accent-ink: #ffffff;
+  --soft: #fbe9ee;
+  --shadow: 0 1px 2px rgba(40, 20, 50, .06), 0 8px 24px rgba(40, 20, 50, .07);
+  --f-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17111a; --surface: #221a26; --ink: #f4eef6; --muted: #a99bb0;
+    --line: #35293a; --accent: #ff5578; --accent-ink: #1a0d12; --soft: #3a2230;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17111a; --surface: #221a26; --ink: #f4eef6; --muted: #a99bb0;
+  --line: #35293a; --accent: #ff5578; --accent-ink: #1a0d12; --soft: #3a2230;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg); color: var(--ink); font-family: var(--f-body);
+  font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 56px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; }
+header { display: flex; flex-direction: column; gap: 18px; margin-bottom: 28px; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+h1 {
+  font-family: var(--f-display); font-weight: 800; font-size: clamp(34px, 7vw, 56px);
+  line-height: 1.02; margin: 4px 0 0; text-wrap: balance; letter-spacing: -.02em;
+}
+.sub { color: var(--muted); max-width: 52ch; margin: 8px 0 0; }
+.tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.search {
+  flex: 1 1 240px; min-width: 0; padding: 12px 16px; border-radius: 999px;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+  font: inherit;
+}
+.search::placeholder { color: var(--muted); }
+.search:focus-visible, button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.toggle {
+  padding: 12px 18px; border-radius: 999px; border: 1.5px solid var(--line);
+  background: var(--surface); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer;
+}
+.toggle:hover { border-color: var(--accent); }
+.count { color: var(--muted); font-size: 13px; margin-left: auto; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; align-items: start; }
+.card { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--line); }
+.card summary { list-style: none; cursor: pointer; display: block; position: relative; }
+.card summary::-webkit-details-marker { display: none; }
+.thumb { position: relative; aspect-ratio: 3 / 4; background: var(--soft); overflow: hidden; }
+.thumb img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.thumb::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 55%;
+  background: linear-gradient(to top, rgba(18, 8, 22, .82), rgba(18, 8, 22, 0));
+}
+.who { position: absolute; left: 16px; right: 56px; bottom: 14px; z-index: 1; color: #fff; }
+.who small { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; opacity: .8; }
+.who strong { font-family: var(--f-display); font-size: 22px; line-height: 1.15; overflow-wrap: anywhere; }
+.chev {
+  position: absolute; right: 14px; bottom: 14px; z-index: 1; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink); display: grid; place-items: center;
+  transition: transform .2s ease;
+}
+.card[open] .chev { transform: rotate(180deg); }
+.body { padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 16px; }
+.body p { margin: 0; }
+.label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 11px 16px; border-radius: 999px;
+  font-weight: 600; text-decoration: none; font-size: 14px;
+}
+.btn.main { background: var(--accent); color: var(--accent-ink); }
+.btn.alt { background: var(--soft); color: var(--ink); }
+.btn:hover { filter: brightness(1.06); }
+.empty { grid-column: 1 / -1; color: var(--muted); padding: 40px 0; text-align: center; }
+@media (prefers-reduced-motion: reduce) { .chev { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Biblioteca de inspiración</div>
+      <h1>Referencias de Reels</h1>
+      <p class="sub">Videos para usar de guía. Abre cada tarjeta para ver de qué trata, ir al reel original o visitar el canal.</p>
+    </div>
+    <div class="tools">
+      <input class="search" id="q" type="search" placeholder="Buscar por usuario o tema" aria-label="Buscar">
+      <button class="toggle" id="tg" type="button">Colapsar todo</button>
+      <span class="count" id="ct"></span>
+    </div>
+  </header>
+  <main class="grid" id="grid"></main>
+</div>
+
+<script>
+// Para agregar un reel: copia un bloque { ... }, cambia los datos y guarda su portada en assets/.
+var REELS = [
+  {
+    user: "木梨糕酱",
+    thumb: "assets/reel-001.jpg",
+    url: "https://www.rednote.com/discovery/item/6a842b030000000022014c44?xsec_token=ABjfJ0TSo7-aqoIY7q0PcGmZutsIiLuNhvEFdINGKiEfo=&xsec_source=pc_search&source=web_search_result_notes",
+    channel: "https://www.rednote.com/user/profile/5a32083111be103bbc0fa0ce",
+    desc: "Vlog de comida para uno: fideos picantes coreanos con queso, spam, empanada y huevo. Cocina inmersiva."
+  }
+];
+
+var grid = document.getElementById("grid");
+var q = document.getElementById("q");
+var tg = document.getElementById("tg");
+var ct = document.getElementById("ct");
+var CHEV = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var ARR = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5 11l6-6M6 5h5v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function render() {
+  var term = q.value.trim().toLowerCase();
+  var list = REELS.filter(function (r) {
+    return !term || (r.user + " " + r.desc).toLowerCase().indexOf(term) !== -1;
+  });
+  ct.textContent = list.length + (list.length === 1 ? " reel" : " reels");
+  if (!list.length) {
+    grid.innerHTML = '<p class="empty">No hay reels que coincidan con esa búsqueda.</p>';
+    return;
+  }
+  grid.innerHTML = list.map(function (r) {
+    // si la portada no carga, se quita la imagen y queda el fondo de color de .thumb
+    var img = r.thumb ? '<img src="' + esc(r.thumb) + '" alt="Portada del reel de ' + esc(r.user) + '" loading="lazy" onerror="this.remove()">' : '';
+    return '<details class="card" open>' +
+      '<summary><div class="thumb">' + img +
+      '<div class="who"><small>Creador</small><strong>' + esc(r.user) + '</strong></div>' +
+      '<span class="chev">' + CHEV + '</span></div></summary>' +
+      '<div class="body">' +
+      '<div><div class="label">De qué trata</div><p>' + esc(r.desc) + '</p></div>' +
+      '<div class="actions">' +
+      '<a class="btn main" href="' + esc(r.url) + '" target="_blank" rel="noopener">Ver reel ' + ARR + '</a>' +
+      '<a class="btn alt" href="' + esc(r.channel) + '" target="_blank" rel="noopener">Ver canal ' + ARR + '</a>' +
+      '</div></div></details>';
+  }).join("");
+  syncLabel();
+}
+
+function syncLabel() {
+  var all = grid.querySelectorAll("details");
+  var anyOpen = Array.prototype.some.call(all, function (d) { return d.open; });
+  tg.textContent = anyOpen ? "Colapsar todo" : "Expandir todo";
+}
+
+tg.addEventListener("click", function () {
+  var all = grid.querySelectorAll("details");
+  var anyOpen = Array.prototype.some.call(all, function (d) { return d.open; });
+  all.forEach(function (d) { d.open = !anyOpen; });
+  syncLabel();
+});
+grid.addEventListener("toggle", syncLabel, true);
+q.addEventListener("input", render);
+render();
+</script>
+</body>
+</html>
