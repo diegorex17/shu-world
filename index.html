@@ -367,6 +367,9 @@ function esc(s) {
 }
 
 // Marcas de "Ya utilicé" / "Descartar": se guardan en el navegador de quien las hace (su celular)
+// Supabase: la URL y la llave "publishable" son públicas a propósito (la tabla solo guarda marcas)
+var SUPA_URL = "https://pduqkildiodprzecjkfi.supabase.co";
+var SUPA_KEY = "sb_publishable_Gd45q3YVWDwEW-5IWWLMgA_Oi2ZuwIk";
 var CLAVE = "shu-marcas";
 var marcas = {};
 try { marcas = JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) { marcas = {}; }
@@ -408,13 +411,52 @@ function esNuevo(r) {
 }
 function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(marcas)); } catch (e) {} }
 
+// Las marcas viven en Supabase (tabla "marcas") para que Shu y Diegore vean lo mismo en cualquier aparato.
+// localStorage queda solo como copia para pintar rápido mientras llega la nube.
+function nube(metodo, ruta, cuerpo, extra) {
+  var h = { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY, "Content-Type": "application/json" };
+  if (extra) h.Prefer = extra;
+  return fetch(SUPA_URL + "/rest/v1/marcas" + ruta, { method: metodo, headers: h, body: cuerpo ? JSON.stringify(cuerpo) : undefined })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.status);
+      // con "return=minimal" Supabase responde sin cuerpo (201/204)
+      return res.text().then(function (t) { return t ? JSON.parse(t) : null; });
+    });
+}
+function subir(id, valor) {
+  var p = valor
+    ? nube("POST", "", [{ id: id, estado: valor, actualizado: new Date().toISOString() }], "resolution=merge-duplicates,return=minimal")
+    : nube("DELETE", "?id=eq." + encodeURIComponent(id), null, "return=minimal");
+  p.catch(function () { avisar("No se pudo guardar en la nube. Revisa tu internet y vuelve a marcarlo.", null); });
+}
+function cargarNube() {
+  nube("GET", "?select=id,estado").then(function (filas) {
+    var enNube = {};
+    filas.forEach(function (f) { enNube[f.id] = f.estado; });
+    // solo la primera vez en cada aparato, las marcas que ya había en este navegador se suben para no perderlas
+    // (después no, o una marca que la otra persona quitó volvería a aparecer)
+    var yaSubido = false;
+    try { yaSubido = localStorage.getItem("shu-subido") === "1"; localStorage.setItem("shu-subido", "1"); } catch (e) {}
+    var pendientesDeSubir = yaSubido ? [] : Object.keys(marcas).filter(function (id) { return !(id in enNube); });
+    if (pendientesDeSubir.length) {
+      nube("POST", "", pendientesDeSubir.map(function (id) { return { id: id, estado: marcas[id] }; }), "resolution=merge-duplicates,return=minimal")
+        .catch(function () {});
+      pendientesDeSubir.forEach(function (id) { enNube[id] = marcas[id]; });
+    }
+    marcas = enNube;
+    guardar();
+    render();
+  }).catch(function () { avisar("Sin conexión con la nube: se muestran las marcas guardadas en este aparato.", null); });
+}
+
 function marcar(id, valor) {
   var antes = marcas[id];
   if (valor) marcas[id] = valor; else delete marcas[id];
   guardar();
+  subir(id, valor);
   render();
   var txt = valor === "usado" ? "Movido a «Ya utilicé» ✓" : valor === "descartado" ? "Reel descartado" : "De vuelta en pendientes";
-  avisar(txt, function () { if (antes) marcas[id] = antes; else delete marcas[id]; guardar(); render(); });
+  avisar(txt, function () { if (antes) marcas[id] = antes; else delete marcas[id]; guardar(); subir(id, antes); render(); });
 }
 
 // Copia el usuario para buscarlo en la app de RedNote
@@ -554,6 +596,9 @@ document.getElementById("deshacer").addEventListener("click", function () {
 });
 q.addEventListener("input", render);
 render();
+cargarNube();
+// al volver a la pestaña se traen los cambios que haya hecho la otra persona
+document.addEventListener("visibilitychange", function () { if (!document.hidden) cargarNube(); });
 </script>
 </body>
 </html>

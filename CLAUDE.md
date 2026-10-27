@@ -15,6 +15,11 @@ Página de una sola hoja (`index.html`) con reels de referencia para Shu. Se pub
 
 Si no puedes leer un link, di qué datos faltan; no los inventes. Los links con `xsec_token` pueden caducar: avisa si uno deja de abrir.
 
+## Marcas en la nube
+"Ya utilicé" / "Descartar" se guardan en Supabase (proyecto `shuworld`, tabla `marcas`: id del reel + estado),
+para que Shu y Diegore vean lo mismo en cualquier aparato. En `index.html` van `SUPA_URL` y la llave
+publishable (públicas a propósito). Nunca pongas ahí la llave secret/service_role. localStorage es solo copia rápida.
+
 ## Reglas
 - Cambia solo lo necesario y explica por qué. Antes de borrar o renombrar archivos, muestra qué cambia y espera OK.
 - Mantén el diseño: tarjetas `<details>`, buscador, "Colapsar/Expandir todo", tokens de color claro/oscuro,
